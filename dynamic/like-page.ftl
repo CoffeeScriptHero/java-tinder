@@ -32,12 +32,12 @@
                         <br>
                     </div>
                     <div class="col-12 col-lg-6">
-                        <button type="submit" value="false" name="submit" class="btn btn-outline-danger btn-block"><span
+                        <button type="submit" value="false" name="submit1" class="btn btn-outline-danger btn-block"><span
                                     class="fa fa-times"></span> Dislike
                         </button>
                     </div>
                     <div class="col-12 col-lg-6">
-                        <button type="submit" value="true" name="submit" class="btn btn-outline-success btn-block"><span
+                        <button type="submit" value="true" name="submit2" class="btn btn-outline-success btn-block"><span
                                     class="fa fa-heart"></span> Like
                         </button>
                     </div>
