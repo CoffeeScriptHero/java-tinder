@@ -24,7 +24,7 @@ public class UsersServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try (PrintWriter w = resp.getWriter()) {
             data.put("user", userController.getUserById(0));
-            conf.getTemplate("java-tinder/dynamic/like-page.ftl").process(data, w);
+            conf.getTemplate("dynamic/like-page.ftl").process(data, w);
         } catch (TemplateException e) {
             throw new RuntimeException(e);
         }
@@ -36,7 +36,7 @@ public class UsersServlet extends HttpServlet {
         try (PrintWriter w = response.getWriter()) {
             if (id != 8) {
             data.put("user", userController.getUserById(id));
-            conf.getTemplate("java-tinder/dynamic/like-page.ftl").process(data, w);
+            conf.getTemplate("dynamic/like-page.ftl").process(data, w);
             String like = request.getParameter("submit2");
                 if (like != null) {
                     likedList.add("Yes");
