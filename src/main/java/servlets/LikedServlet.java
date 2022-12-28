@@ -39,9 +39,13 @@ public class LikedServlet extends HttpServlet {
     HashMap<String, Object> data = new HashMap<>();
 
     ArrayList<User> likedUsers = new ArrayList<>();
-    while (likedUsers.iterator().hasNext()) {
-        likedUsers.add(userController.getUserById(likedController.findUserForId(new User())));
-    }// get user "from" by cookie?
+//    while (likedUsers.iterator().hasNext()) {
+//        likedUsers.add(userController.getUserById(likedController.findUserForId(new User())));
+//    }// get user "from" by cookie?
+        likedUsers.add(userController.getUserById(2));
+        likedUsers.add(userController.getUserById(3));
+        likedUsers.add(userController.getUserById(5));
+
     data.put("users", likedUsers);
 
     try (PrintWriter w = resp.getWriter()) {
@@ -58,5 +62,6 @@ public class LikedServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        resp.sendRedirect("/messages?id=" + req.getParameter("userId"));
     }
 }
