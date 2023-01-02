@@ -1,8 +1,20 @@
 package user;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.Random;
 
-public class CollectionUserDAO implements UserDAO{
+public class CollectionUserDAO implements UserDAO {
+    private static CollectionUserDAO instance = null;
+    private final String SELECT_BY_ID = "select * from users where id=?";
+    private final String SELECT_BY_EMAIL = "select * from users where email=?";
+    private final Connection conn;
+    private final String[] images;
+    private User mainUser;
 
     private User user1 = new User(1,
             "Volodymyr",
@@ -29,7 +41,30 @@ public class CollectionUserDAO implements UserDAO{
             "Oleksii",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Oleksii_Reznikov_%28portrait%29.jpg/1024px-Oleksii_Reznikov_%28portrait%29.jpg");
 
-    private ArrayList<User> selectUsers(){
+
+    public CollectionUserDAO(Connection conn) {
+        this.conn = conn;
+        this.mainUser = new User();
+        this.images = new String[]{
+                "https://api.time.com/wp-content/uploads/2016/07/vice-president-joe-biden-national-ice-cream-day_01-web1.jpg",
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Smiley.svg/1200px-Smiley.svg.png",
+                "https://www.purina.com.my/sites/default/files/styles/ttt_image_510/public/2021-02/BREED%20Hero%20Mobile_0004_welsh_corgi_pembroke.jpg?itok=OUx5d899",
+                "https://upload.wikimedia.org/wikipedia/commons/d/d8/Oxford_blue.png"
+        };
+    }
+
+    public static CollectionUserDAO getInstance(Connection conn) {
+        if (instance == null) {
+            instance = new CollectionUserDAO(conn);
+        }
+        return instance;
+    }
+
+    private String getRandomImg() {
+        return this.images[new Random().nextInt(this.images.length)];
+    }
+
+    private ArrayList<User> selectUsers() {
         ArrayList<User> users = new ArrayList<>();
         users.add(user1);
         users.add(user2);
@@ -50,5 +85,83 @@ public class CollectionUserDAO implements UserDAO{
     @Override
     public User getUserById(int id) {
         return selectUsers().get(id);
+    }
+
+    @Override
+    public Optional<User> getById(int id) {
+        try (PreparedStatement stmt = conn.prepareStatement(SELECT_BY_ID)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(
+                        new User(
+                                rs.getInt("id"),
+                                rs.getString("name"),
+                                rs.getString("img")
+                        )
+                );
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<User> getByEmail(String email) {
+        try (PreparedStatement stmt = conn.prepareStatement(SELECT_BY_EMAIL)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    return Optional.empty();
+                }
+                return Optional.of(
+                        new User(
+                                rs.getInt("id"),
+                                rs.getString("name"),
+                                rs.getString("img"),
+                                rs.getString("cookie_id"),
+                                rs.getString("password")
+                        )
+                );
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public void addMessage(int idFrom, int idTo, String message) {
+        String insertSql = "insert into messages (user_id_from, user_id_to, content)" +
+                "values (?, ?, ?)";
+
+        try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
+            stmt.setInt(1, idFrom);
+            stmt.setInt(2, idTo);
+            stmt.setString(3, message);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    @Override
+    public void add(String email, String name, String password, String cookieId) throws SQLException {
+        String insertSql = "insert into users (img, email, password, name, cookie_id)" +
+                " values (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
+            stmt.setString(1, getRandomImg());
+            stmt.setString(2, email);
+            stmt.setString(3, password);
+            stmt.setString(4, name);
+            stmt.setString(5, cookieId);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 }
