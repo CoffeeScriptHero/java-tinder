@@ -370,4 +370,22 @@ input:focus{
   padding: 50px 0px;
   text-align: center;
 }
-.not-found {}
+.error-border {
+  border: 2px solid red;
+  z-index: 5;
+}
+.submit-wrapper {
+  position: relative;
+}
+.msg-error {
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  color: red;
+}
+.error-border:focus {
+  background-color: transparent;
+  outline: none;
+  border: 2px solid red;
+}
