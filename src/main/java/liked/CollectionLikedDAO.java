@@ -1,36 +1,55 @@
 package liked;
 
 import user.User;
-import user.UserController;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class CollectionLikedDAO implements LikedDAO {
+public class CollectionLikedDAO implements LikedDAO<Like> {
 
-    ArrayList<Like> likes = new ArrayList();
+    private final Connection conn;
+
+    public CollectionLikedDAO (Connection conn){
+        this.conn = conn;
+    }
+
 
     @Override
     public void saveLike(Like like) {
-        likes.add(like);
-
+        try(PreparedStatement ps = conn.prepareStatement(
+                "insert into liked(like_from_id, like_for_id) values (?, ?)")){
+            ps.setInt(1, like.getUserFromId());
+            ps.setInt(2, like.getUserForId());
+            ps.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
+
 
     @Override
     public void deleteLike(Like like) {
-        likes.remove(like);
+        try(PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM liked WHERE like_from_id=? and like_for_id=?")){
+            ps.setInt(1, like.getUserFromId());
+            ps.setInt(2, like.getUserForId());
+            ps.execute();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public List<Like> getAllLikes() {
-        return likes;
+    public ResultSet getLikesFromUser (User usr){
+        try {
+            PreparedStatement ps = conn.prepareStatement("SELECT * from liked WHERE like_from_id=?");
+            ps.setInt(1, usr.getId());
+            return ps.executeQuery();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @Override
-    public int findUserForId(User usr) {
-            int id = usr.getId();
-            //choose from db id users "for" by user's "from" id
-            return 0;
-    }
 }
 
