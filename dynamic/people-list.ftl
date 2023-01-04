@@ -25,13 +25,15 @@
                     <h3 class="panel-title">User List</h3>
                 </div>
                 <div class="panel-body">
+                    <form action="/liked" method="post"></form>
                     <div class="table-container">
-                        <table class="table-users table" border="0">
+                         <table class="table-users table" border="0">
                             <tbody>
                                 <#list users as u>
                                     <tr>
                                         <td width="10">
                                             <div class="avatar-img">
+                                                <a href="/messages/${u.id}">
                                                 <img class="img-circle" src="${u.img}" />
                                             </div>
                                         </td>

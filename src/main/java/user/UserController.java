@@ -1,5 +1,6 @@
 package user;
 
+import javax.servlet.http.Cookie;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ public class UserController {
         return service.getUserById(id);
     }
 
+    public User getByCookie(Cookie cokie) {
+        return service.getByCookie(cokie);
+    }
     public Optional<User> getById(int id) { return service.getById(id); }
 
     public Optional<User> getByEmail(String email) { return service.getByEmail(email); }
