@@ -8,7 +8,8 @@
     <link rel="icon" href="img/favicon.ico">
 
     <title>Chat</title>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css"
+          integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.min.css" rel="stylesheet">
 
@@ -24,7 +25,7 @@
                 <div class="row header-one text-white p-1">
                     <div class="col-md-6 name pl-2">
                         <i class="fa fa-comment"></i>
-                        <h6 class="ml-1 mb-0">Ketty Peris</h6>
+                        <h6 class="ml-1 mb-0">${user.name}</h6>
                     </div>
                     <div class="col-md-6 options text-right pr-0">
                         <i class="fa fa-window-minimize hide-chat-box hover text-center pt-1"></i>
@@ -45,75 +46,21 @@
                 </div>
             </div>
             <div class="chat-content">
-                <div class="col-md-12 chats pt-3 pl-2 pr-3 pb-3">
-                    <ul class="p-0">
-                        <li class="send-msg float-right mb-2">
-                            <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
-                                Hii
-                            </p>
-                        </li>
-                        <li class="receive-msg float-left mb-2">
-                            <div class="sender-img">
-                                <img src="http://nicesnippets.com/demo/image1.jpg" class="float-left">
-                            </div>
-                            <div class="receive-msg-desc float-left ml-2">
-                                <p class="bg-white m-0 pt-1 pb-1 pl-2 pr-2 rounded">
-                                    hiii <br>
-                                    How are you ?<br>
-                                </p>
-                                <span class="receive-msg-time">ketty, Jan 25, 6:20 PM</span>
-                            </div>
-                        </li>
-                        <li class="send-msg float-right mb-2">
-                            <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
-                                nice <br>
-                                Are you fine ?
-                            </p>
-                        </li>
-                        <li class="receive-msg float-left mb-2">
-                            <div class="sender-img">
-                                <img src="http://nicesnippets.com/demo/image1.jpg" class="float-left">
-                            </div>
-                            <div class="receive-msg-desc float-left ml-2">
-                                <p class="bg-white m-0 pt-1 pb-1 pl-2 pr-2 rounded">
-                                    Yes always
-                                </p>
-                            </div>
-                        </li>
-                        <li class="send-msg float-right mb-2">
-                            <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
-                                <a href="https://nicesnippets.com/" class="text-dark rounded" target="_blank"><u>https://nicesnippets.com/</u></a>
-                            </p>
-                        </li>
-                        <li class="send-msg float-right mb-2">
-                            <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
-                                Byy
-                            </p>
-                            <span class="send-msg-time">1 min</span>
-                        </li>
-                        <li class="send-msg float-right mb-2">
-                            <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
-                                <a href="https://nicesnippets.com/" class="text-dark rounded" target="_blank"><u>https://nicesnippets.com/</u></a>
-                            </p>
-                        </li>
-                        <li class="send-msg float-right mb-2">
-                            <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
-                                Byy
-                            </p>
-                            <span class="send-msg-time">1 min</span>
-                        </li>
-                        <li class="send-msg float-right mb-2">
-                            <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
-                                <a href="https://nicesnippets.com/" class="text-dark rounded" target="_blank"><u>https://nicesnippets.com/</u></a>
-                            </p>
-                        </li>
-                        <li class="send-msg float-right mb-2">
-                            <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
-                                Byy
-                            </p>
-                            <span class="send-msg-time">1 min</span>
-                        </li>
-                    </ul>
+                <div class="col-md-12 chats pt-3 pl-2 pr-3 pb-3 chat-height">
+                    <#if messages?size = 0>
+                        <p class="empty-dialogue-text">You haven't talked to this person yet.</p>
+                    <#else>
+                        <ul class="p-0">
+                            <#list messages as m>
+                                    <li class="send-msg float-right mb-2">
+                                        <p class="pt-1 pb-1 pl-2 pr-2 m-0 rounded">
+                                            ${m.message}
+                                        </p>
+                                        <span class="receive-msg-time">${m.dateTime}</span>
+                                    </li>
+                            </#list>
+                        </ul>
+                    </#if>
                 </div>
                 <div class="col-md-12 p-2 msg-box border border-primary">
                     <div class="row">
@@ -121,7 +68,9 @@
                             <i class="fa fa-smile-o"></i>
                         </div>
                         <div class="col-md-7 pl-0">
-                            <input type="text" class="border-0" placeholder=" Send message" />
+                            <form>
+                                <input type="text" id="msg-input" class="border-0" placeholder=" Send message"/>
+                            </form>
                         </div>
                         <div class="col-md-3 text-right options-right">
                             <i class="fa fa-picture-o mr-2"></i>
@@ -132,6 +81,20 @@
         </div>
     </div>
 </div>
+<script>
+    const input = document.querySelector("#msg-input");
+    input.addEventListener("keydown", inputHandler);
 
+    async function inputHandler(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            await fetch("/message-form?senderId=${mainUser.id}&receiverId=${user.id}&message=" + input.value, {
+                method: 'POST',
+            })
+            input.value = "";
+            window.location.href = "/messages/${user.id}"
+        }
+    }
+</script>
 </body>
 </html>

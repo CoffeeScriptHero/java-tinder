@@ -3,6 +3,7 @@ package user;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class UserController {
@@ -10,6 +11,14 @@ public class UserController {
 
     public UserController(Connection conn) {
         this.service = new UserService(conn);
+    }
+
+    public void setMainUser(String cookieId) {
+        service.setMainUser(cookieId);
+    }
+
+    public User getMainUser() {
+        return service.getMainUser();
     }
 
     public ArrayList<User> getAllUsers() {
@@ -28,7 +37,9 @@ public class UserController {
         service.add(email, name, password, cookieId);
     }
 
-    public void addMessage(int idFrom, int idTo, String message) {
-        service.addMessage(idFrom, idTo, message);
+    public List<Message> getDialogue(int senderId, int receiverId) { return service.getDialogue(senderId, receiverId); }
+
+    public void addMessage(int senderId, int receiverId, String message) {
+        service.addMessage(senderId, receiverId, message);
     }
 }
