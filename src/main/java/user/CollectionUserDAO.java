@@ -16,6 +16,7 @@ public class CollectionUserDAO implements UserDAO {
     private final Connection conn;
     private final String[] images;
     private User mainUser;
+    private User usr;
 
     private User user1 = new User(1,
             "Volodymyr",
@@ -89,21 +90,24 @@ public class CollectionUserDAO implements UserDAO {
     }
 
     @Override
-    public User getByCookie(Cookie cokie) {
+    public User getByCookie(Cookie cookie) {
         try (PreparedStatement ps = conn.prepareStatement("SELECT * from users WHERE cookie_id=?")) {
-            ps.setString(1, cokie.getValue());
+            ps.setString(1, cookie.getValue());
             try (ResultSet rs = ps.executeQuery()) {
-                User usr = new User( rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getString("img"));
-                return usr;
+                if (rs.next()) {
+                    usr = new User(rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("img"));
+                }
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
+        return usr;
     }
+
+
 
     @Override
     public Optional<User> getById(int id) {
@@ -167,7 +171,7 @@ public class CollectionUserDAO implements UserDAO {
     }
 
     @Override
-    public void add(String email, String name, String password, String cookieId) throws SQLException {
+    public void add(String email, String name, String password, String cookieId) {
         String insertSql = "insert into users (img, email, password, name, cookie_id)" +
                 " values (?, ?, ?, ?, ?)";
 

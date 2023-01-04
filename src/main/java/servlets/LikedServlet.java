@@ -6,7 +6,6 @@ import liked.LikedController;
 import user.User;
 import user.UserController;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -61,6 +60,7 @@ public class LikedServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.sendRedirect("messages?id=" + req.getParameter("userId"));
     }
 }
