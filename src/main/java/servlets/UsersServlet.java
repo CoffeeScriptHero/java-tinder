@@ -18,7 +18,6 @@ public class UsersServlet extends HttpServlet {
     private final UserController userController;
     private final LikedController likedController;
     Configuration conf = new Configuration();
-    ArrayList<String> likedList = new ArrayList<>();
     int id = 1;
     Map<String, User> data = new HashMap<>();
 
@@ -47,11 +46,8 @@ public class UsersServlet extends HttpServlet {
                 conf.getTemplate("dynamic/like-page.ftl").process(data, w);
                 String like = request.getParameter("submit2");
                 if (like != null) {
-                    likedList.add("Yes");
-                } else {
-                    likedList.add("No");
+                    // Додати в Лайкедлист юзера з відповідним айді
                 }
-                w.println(likedList);
                 id++;
             } else {
                 response.sendRedirect("/liked");
