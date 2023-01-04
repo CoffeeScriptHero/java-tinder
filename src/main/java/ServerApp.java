@@ -28,7 +28,7 @@ public class ServerApp {
         Server server = new Server(8030);
 
         UserController userController = new UserController(conn);
-        LikedController likedController = new LikedController();
+        LikedController likedController = new LikedController(conn);
         LoginFormServlet loginForm = new LoginFormServlet(userController);
 
         UsersServlet usersPage = new UsersServlet(userController, likedController);

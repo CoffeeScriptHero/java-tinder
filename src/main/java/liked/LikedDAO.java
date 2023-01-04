@@ -1,12 +1,7 @@
 package liked;
 
-import user.User;
+public interface LikedDAO<T>{
+    void saveLike(T val);
+    void deleteLike(T val);
 
-import java.util.List;
-
-public interface LikedDAO {
-    void saveLike(Like like);
-    void deleteLike(Like like);
-    List<Like> getAllLikes ();
-   int findUserForId(User usr);
 }

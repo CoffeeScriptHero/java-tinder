@@ -1,5 +1,6 @@
 package user;
 
+import javax.servlet.http.Cookie;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -85,6 +86,23 @@ public class CollectionUserDAO implements UserDAO {
     @Override
     public User getUserById(int id) {
         return selectUsers().get(id);
+    }
+
+    @Override
+    public User getByCookie(Cookie cokie) {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * from users WHERE cookie_id=?")) {
+            ps.setString(1, cokie.getValue());
+            try (ResultSet rs = ps.executeQuery()) {
+                User usr = new User( rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("img"));
+                return usr;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override

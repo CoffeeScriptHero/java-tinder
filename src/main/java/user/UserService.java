@@ -1,5 +1,6 @@
 package user;
 
+import javax.servlet.http.Cookie;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,7 +21,12 @@ public class UserService {
         return dao.getUserById(id);
     }
 
-    public Optional<User> getById(int id) {
+    public User getByCookie(Cookie cokie) {
+        return dao.getByCookie(cokie);
+    }
+
+
+        public Optional<User> getById(int id) {
         return dao.getById(id);
     }
 
