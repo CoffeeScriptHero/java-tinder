@@ -1,3 +1,4 @@
+import filters.CheckCookieFilter;
 import freemarker.template.Configuration;
 import liked.LikedController;
 import org.eclipse.jetty.server.Server;
@@ -10,16 +11,18 @@ import servlets.UsersServlet;
 import servlets.forms.LoginFormServlet;
 import user.UserController;
 
+import javax.servlet.DispatcherType;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.EnumSet;
 
 //http://localhost:8030/users
 public class ServerApp {
     private final static String URL = "jdbc:postgresql://mel.db.elephantsql.com/envmsosd";
     private final static String USER = "envmsosd";
     private final static String PASSWORD = "JeZ9CaaGoPLCzRwXlhD5YTzqoR1fm5W9";
-
+    private static final EnumSet<DispatcherType> ft = EnumSet.of(DispatcherType.REQUEST);
     public static void main(String[] args) throws Exception{
         Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
         Configuration conf = new Configuration(Configuration.VERSION_2_3_31);
@@ -41,6 +44,9 @@ public class ServerApp {
         handler.addServlet(new ServletHolder(loginForm), "/login-form");
         handler.addServlet(new ServletHolder(usersPage), "/users");
         handler.addServlet(new ServletHolder(likedPage), "/liked");
+
+        handler.addFilter(CheckCookieFilter.class, "/users", ft);
+        handler.addFilter(CheckCookieFilter.class, "/liked", ft);
 
         server.setHandler(handler);
         server.start();
