@@ -2,13 +2,12 @@ import filters.CheckCookieFilter;
 import freemarker.template.Configuration;
 import liked.LikedController;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import servlets.LikedServlet;
-import servlets.LoginServlet;
-import servlets.StaticContentServlet;
-import servlets.UsersServlet;
+import servlets.*;
 import servlets.forms.LoginFormServlet;
+import servlets.forms.MessageFormServlet;
 import user.UserController;
 
 import javax.servlet.DispatcherType;
@@ -32,10 +31,15 @@ public class ServerApp {
 
         UserController userController = new UserController(conn);
         LikedController likedController = new LikedController(conn);
+
         LoginFormServlet loginForm = new LoginFormServlet(userController);
+        MessageFormServlet messageForm = new MessageFormServlet(userController);
 
         UsersServlet usersPage = new UsersServlet(userController, likedController);
         LikedServlet likedPage = new LikedServlet(userController, likedController);
+        MessagesServlet chatPage = new MessagesServlet(conf, userController);
+
+        CheckCookieFilter cookieFilter = new CheckCookieFilter(userController);
 
         ServletContextHandler handler = new ServletContextHandler();
 
@@ -44,9 +48,12 @@ public class ServerApp {
         handler.addServlet(new ServletHolder(loginForm), "/login-form");
         handler.addServlet(new ServletHolder(usersPage), "/users");
         handler.addServlet(new ServletHolder(likedPage), "/liked");
+        handler.addServlet(new ServletHolder(chatPage), "/messages/*");
+        handler.addServlet(new ServletHolder(messageForm), "/message-form");
 
-        handler.addFilter(CheckCookieFilter.class, "/users", ft);
-        handler.addFilter(CheckCookieFilter.class, "/liked", ft);
+        handler.addFilter(new FilterHolder(cookieFilter), "/users", ft);
+        handler.addFilter(new FilterHolder(cookieFilter), "/liked", ft);
+        handler.addFilter(new FilterHolder(cookieFilter), "/messages/*", ft);
 
         server.setHandler(handler);
         server.start();

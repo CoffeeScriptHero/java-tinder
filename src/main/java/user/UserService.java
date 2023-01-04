@@ -4,6 +4,7 @@ import javax.servlet.http.Cookie;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class UserService {
@@ -11,6 +12,14 @@ public class UserService {
 
     public UserService(Connection conn) {
         this.dao = CollectionUserDAO.getInstance(conn);
+    }
+
+    public void setMainUser(String cookieId) {
+        dao.setMainUser(cookieId);
+    }
+
+    public User getMainUser() {
+        return dao.getMainUser();
     }
 
     public ArrayList<User> getAllUsers() {
@@ -38,7 +47,9 @@ public class UserService {
         dao.add(email, name, password, cookieId);
     }
 
-    public void addMessage(int idFrom, int idTo, String message) {
-        dao.addMessage(idFrom, idTo, message);
+    public List<Message> getDialogue(int senderId, int receiverId) { return dao.getDialogue(senderId, receiverId); }
+
+    public void addMessage(int senderId, int receiverId, String message) {
+        dao.addMessage(senderId, receiverId, message);
     }
 }

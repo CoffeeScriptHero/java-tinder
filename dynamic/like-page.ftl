@@ -20,7 +20,7 @@
 
 <div class="col-4 offset-4">
     <div class="card">
-        <form action="/users?name=${user.name}&img=${user.img}" method="post">
+        <form action="/users?name=${user.name}&img=${user.img}&id=${user.id}" method="post">
             <div class="card-body">
                 <div class="row">
                     <div class="col-12 col-lg-12 col-md-12 text-center">
