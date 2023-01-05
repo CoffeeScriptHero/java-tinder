@@ -1,10 +1,12 @@
 package user;
 
+import javax.servlet.http.Cookie;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -12,9 +14,23 @@ public class CollectionUserDAO implements UserDAO {
     private static CollectionUserDAO instance = null;
     private final String SELECT_BY_ID = "select * from users where id=?";
     private final String SELECT_BY_EMAIL = "select * from users where email=?";
+    private final String SELECT_USER_BY_COOKIE = "select * from users where cookie_id=?";
+    private final String SELECT_DIALOGUE = "select * from messages\n" +
+            "where user_id_from=?\n" +
+            "and user_id_to=?\n" +
+            "union\n" +
+            "select * from messages\n" +
+            "where user_id_from=?\n" +
+            "and user_id_to=?\n" +
+            "order by date_time";
+    private final String INSERT_MESSAGE = "insert into messages (user_id_from, user_id_to, message)" +
+            "values (?, ?, ?)";
+    private final String INSERT_USER = "insert into users (img, email, password, name, cookie_id)" +
+            " values (?, ?, ?, ?, ?)";
     private final Connection conn;
     private final String[] images;
     private User mainUser;
+    private User usr;
 
     private User user1 = new User(1,
             "Volodymyr",
@@ -64,6 +80,24 @@ public class CollectionUserDAO implements UserDAO {
         return this.images[new Random().nextInt(this.images.length)];
     }
 
+    public void setMainUser(String cookieId) {
+        try (PreparedStatement stmt = conn.prepareStatement(SELECT_USER_BY_COOKIE)) {
+            stmt.setString(1, cookieId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    this.mainUser = new User(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("img"),
+                            rs.getString("cookie_id")
+                    );
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     private ArrayList<User> selectUsers() {
         ArrayList<User> users = new ArrayList<>();
         users.add(user1);
@@ -77,6 +111,10 @@ public class CollectionUserDAO implements UserDAO {
         return users;
     }
 
+    public User getMainUser() {
+        return mainUser;
+    }
+
     @Override
     public ArrayList<User> getAllUsers() {
         return selectUsers();
@@ -86,6 +124,26 @@ public class CollectionUserDAO implements UserDAO {
     public User getUserById(int id) {
         return selectUsers().get(id);
     }
+
+    @Override
+    public User getByCookie(Cookie cookie) {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * from users WHERE cookie_id=?")) {
+            ps.setString(1, cookie.getValue());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    usr = new User(rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("img"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return usr;
+    }
+
+
 
     @Override
     public Optional<User> getById(int id) {
@@ -134,13 +192,39 @@ public class CollectionUserDAO implements UserDAO {
     }
 
     @Override
-    public void addMessage(int idFrom, int idTo, String message) {
-        String insertSql = "insert into messages (user_id_from, user_id_to, content)" +
+    public List<Message> getDialogue(int senderId, int receiverId) {
+        List<Message> messages = new ArrayList<>();
+        try (PreparedStatement stmt = conn.prepareStatement(SELECT_DIALOGUE)) {
+            stmt.setInt(1, senderId);
+            stmt.setInt(2, receiverId);
+            stmt.setInt(3, receiverId);
+            stmt.setInt(4, senderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    messages.add(
+                            new Message(
+                                    rs.getInt("user_id_to"),
+                                    rs.getInt("user_id_from"),
+                                    rs.getString("message"),
+                                    rs.getTimestamp("date_time").toLocalDateTime()
+                            )
+                    );
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return messages;
+    }
+
+    @Override
+    public void addMessage(int senderId, int receiverId, String message) {
+        String insertSql = "insert into messages (user_id_from, user_id_to, message)" +
                 "values (?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(insertSql)) {
-            stmt.setInt(1, idFrom);
-            stmt.setInt(2, idTo);
+            stmt.setInt(1, senderId);
+            stmt.setInt(2, receiverId);
             stmt.setString(3, message);
             stmt.executeUpdate();
         } catch (SQLException ex) {
@@ -149,7 +233,7 @@ public class CollectionUserDAO implements UserDAO {
     }
 
     @Override
-    public void add(String email, String name, String password, String cookieId) throws SQLException {
+    public void add(String email, String name, String password, String cookieId) {
         String insertSql = "insert into users (img, email, password, name, cookie_id)" +
                 " values (?, ?, ?, ?, ?)";
 

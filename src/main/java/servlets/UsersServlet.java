@@ -2,11 +2,13 @@ package servlets;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import liked.Like;
 import liked.LikedController;
 import user.User;
 import user.UserController;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +29,7 @@ public class UsersServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try (PrintWriter w = resp.getWriter()) {
             // замінити getUserById на getById (повертає Optional)
             data.put("user", userController.getUserById(0));
@@ -38,7 +40,7 @@ public class UsersServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try (PrintWriter w = response.getWriter()) {
             if (id != 8) {
                 // замінити getUserById на getById (повертає Optional)
@@ -46,7 +48,9 @@ public class UsersServlet extends HttpServlet {
                 conf.getTemplate("dynamic/like-page.ftl").process(data, w);
                 String like = request.getParameter("submit2");
                 if (like != null) {
-                    // Додати в Лайкедлист юзера з відповідним айді
+                    Cookie cookie = Optional.ofNullable(request.getCookies())
+                            .flatMap(c -> Arrays.stream(c).filter(ck -> ck.getName().equals("id")).findFirst()).get();
+                    likedController.saveLike(new Like(userController.getByCookie(cookie).getId(), id));
                 }
                 id++;
             } else {
