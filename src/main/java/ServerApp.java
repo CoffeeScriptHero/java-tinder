@@ -16,7 +16,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.EnumSet;
 
-//http://localhost:8030/users
 public class ServerApp {
     private final static String URL = "jdbc:postgresql://mel.db.elephantsql.com/envmsosd";
     private final static String USER = "envmsosd";
@@ -27,7 +26,7 @@ public class ServerApp {
         Configuration conf = new Configuration(Configuration.VERSION_2_3_31);
         conf.setDirectoryForTemplateLoading(new File("dynamic"));
         conf.setDefaultEncoding("UTF-8");
-        Server server = new Server(8030);
+        Server server = new Server(HerokuEnv.port());
 
         UserController userController = new UserController(conn);
         LikedController likedController = new LikedController(conn);
@@ -46,6 +45,7 @@ public class ServerApp {
         handler.addServlet(new ServletHolder(new StaticContentServlet("static")), "/static/*");
         handler.addServlet(LoginServlet.class, "/login");
         handler.addServlet(new ServletHolder(loginForm), "/login-form");
+        handler.addServlet(UsersRedirectServlet.class, "/");
         handler.addServlet(new ServletHolder(usersPage), "/users");
         handler.addServlet(new ServletHolder(likedPage), "/liked");
         handler.addServlet(new ServletHolder(chatPage), "/messages/*");
