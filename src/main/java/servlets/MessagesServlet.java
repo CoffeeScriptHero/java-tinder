@@ -31,12 +31,12 @@ public class MessagesServlet extends HttpServlet {
         String path = req.getPathInfo();
 
         if (path.startsWith("/")) {
-            id = Integer.parseInt(path.substring(1)) - 1;
+            id = Integer.parseInt(path.substring(1));
         }
 
         User mainUser = userController.getMainUser();
         User user = userController.getUserById(id);
-        List<Message> messages = userController.getDialogue(mainUser.getId(), id );
+        List<Message> messages = userController.getDialogue(mainUser.getId(), id);
         Map<String, Object> data = new HashMap<>();
 
         data.put("user", user);

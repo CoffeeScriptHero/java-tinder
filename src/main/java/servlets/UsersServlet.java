@@ -7,7 +7,6 @@ import liked.LikedController;
 import user.User;
 import user.UserController;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +29,9 @@ public class UsersServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        id = 1;
         try (PrintWriter w = resp.getWriter()) {
-            // замінити getUserById на getById (повертає Optional)
-            data.put("user", userController.getUserById(0));
+            data.put("user", userController.getUserById(id));
             conf.getTemplate("dynamic/like-page.ftl").process(data, w);
         } catch (TemplateException e) {
             throw new RuntimeException(e);
@@ -42,10 +41,8 @@ public class UsersServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try (PrintWriter w = response.getWriter()) {
-            if (id != 8) {
-                // замінити getUserById на getById (повертає Optional)
-                data.put("user", userController.getUserById(id));
-                conf.getTemplate("dynamic/like-page.ftl").process(data, w);
+            System.out.println(id);
+            if (id < 8) {
                 String like = request.getParameter("submit2");
                 if (like != null) {
                     Cookie cookie = Optional.ofNullable(request.getCookies())
@@ -53,8 +50,12 @@ public class UsersServlet extends HttpServlet {
                     likedController.saveLike(new Like(userController.getByCookie(cookie).getId(), id));
                 }
                 id++;
-            } else {
-                response.sendRedirect("/liked");
+                if (id == 8) {
+                    response.sendRedirect("/liked");
+                } else {
+                    data.put("user", userController.getUserById(id));
+                    conf.getTemplate("dynamic/like-page.ftl").process(data, w);
+                }
             }
         } catch (TemplateException e) {
             throw new RuntimeException(e);
