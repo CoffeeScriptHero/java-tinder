@@ -53,10 +53,6 @@ public class CollectionUserDAO implements UserDAO {
     private User user7 = new User(7,
             "Valerii",
             "https://upload.wikimedia.org/wikipedia/commons/2/2f/Lieutenant_General_Valerii_Zaluzhnyi.jpg");
-    private User user8 = new User(8,
-            "Oleksii",
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Oleksii_Reznikov_%28portrait%29.jpg/1024px-Oleksii_Reznikov_%28portrait%29.jpg");
-
 
     public CollectionUserDAO(Connection conn) {
         this.conn = conn;
@@ -107,7 +103,6 @@ public class CollectionUserDAO implements UserDAO {
         users.add(user5);
         users.add(user6);
         users.add(user7);
-        users.add(user8);
         return users;
     }
 
@@ -122,7 +117,7 @@ public class CollectionUserDAO implements UserDAO {
 
     @Override
     public User getUserById(int id) {
-        return selectUsers().get(id);
+        return selectUsers().stream().filter(u -> u.getId() == id).findFirst().get();
     }
 
     @Override
@@ -142,8 +137,6 @@ public class CollectionUserDAO implements UserDAO {
         }
         return usr;
     }
-
-
 
     @Override
     public Optional<User> getById(int id) {
