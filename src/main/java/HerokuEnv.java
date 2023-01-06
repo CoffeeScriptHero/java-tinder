@@ -3,7 +3,7 @@ public class HerokuEnv {
         try {
             return Integer.parseInt(System.getenv("PORT"));
         } catch (NumberFormatException ex) {
-            return 3500;
+            return 5000;
         }
     }
 }
