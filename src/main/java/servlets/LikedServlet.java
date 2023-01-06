@@ -33,9 +33,6 @@ public class LikedServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Cookie cookie = Optional.ofNullable(req.getCookies())
                 .flatMap(c -> Arrays.stream(c).filter(ck -> ck.getName().equals("id")).findFirst()).get();
-
-
-
         Configuration conf = new Configuration(Configuration.VERSION_2_3_31);
         conf.setDefaultEncoding(String.valueOf(StandardCharsets.UTF_8));
         conf.setDirectoryForTemplateLoading(new File("dynamic"));

@@ -25,7 +25,7 @@ public class MessageFormServlet extends HttpServlet {
         try {
             int receiverId = Integer.parseInt(ris);
             int senderId = Integer.parseInt(sis);
-            userController.addMessage(senderId, receiverId - 1, msg);
+            userController.addMessage(senderId, receiverId, msg);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
