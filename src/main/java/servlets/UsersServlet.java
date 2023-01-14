@@ -33,6 +33,7 @@ public class UsersServlet extends HttpServlet {
         if (id >= MAX_ID) {
             id = 1;
         }
+
         try (PrintWriter w = resp.getWriter()) {
             data.put("user", userController.getUserById(id));
             conf.getTemplate("dynamic/like-page.ftl").process(data, w);
